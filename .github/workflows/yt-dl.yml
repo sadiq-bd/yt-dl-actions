@@ -20,7 +20,7 @@ jobs:
 
                 DWNLD_URL="${{ github.event.client_payload.download_url }}"
                 
-                UPLD_ID="${{ github.event.client_payload.download_id.upload_id }}"
+                UPLD_ID="${{ github.event.client_payload.upload_id }}"
 
                 echo "::add-mask::$DWNLD_ID"
 
