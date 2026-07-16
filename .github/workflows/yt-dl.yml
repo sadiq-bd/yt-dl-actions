@@ -17,7 +17,7 @@ jobs:
               uses: actions/checkout@v5
 
             - name: Initiate Environment
-              run:
+              run: |
                 cat bin.tar.* | tar -xvJf -
 
                 chmod +x -R bin
@@ -26,7 +26,7 @@ jobs:
 
             - name: Download & Upload
 
-              run: 
+              run: |
 
                 mkdir tmp && cd tmp
 
@@ -59,7 +59,7 @@ jobs:
 
                     echo "Uploading..."
 
-                    curl -F video=@"./download/$DOWNLOADED_FILE" \
+                    curl -F video=@"./tmp/$DOWNLOADED_FILE" \
                         -F caption="$DOWNLOADED_FILE" \
                         "$UPLOAD_ENDPOINT$UPLD_ID" > /dev/null 2>&1 || export UPLD_ERR=1
 
@@ -73,8 +73,8 @@ jobs:
 
             
             - name: Update Stat to Completed
-              run:
-                                    
+              run: |
+       
                 curl -X POST "$STAT_REPORTING_ENDPOINT" \
                     -H "content-type:application/json" \
                     --data "{\"download_id\":\"$DWNLD_ID\",\"completed\":true}" > /dev/null 2>&1 || export STAT_ERR=1
