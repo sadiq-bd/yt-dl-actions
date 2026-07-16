@@ -30,13 +30,11 @@ jobs:
 
                 mkdir tmp && cd tmp
 
-                PAYLOADS="${{ toJson(github.event.client_payload) }}"
+                DWNLD_ID="${{ github.event.client_payload.download_id }}"
 
-                DWNLD_ID=$(echo $PAYLOADS | jq -r '.download_id')
-
-                DWNLD_URL=$(echo $PAYLOADS | jq -r '.download_url')
+                DWNLD_URL="${{ github.event.client_payload.download_url }}"
                 
-                UPLD_ID=$(echo $PAYLOADS | jq -r '.upload_id')
+                UPLD_ID="${{ github.event.client_payload.download_id.upload_id }}"
 
                 echo 'Downloading...'
               
@@ -80,10 +78,8 @@ jobs:
             - name: Update Stat to Completed
               run: |
 
-                PAYLOADS="${{ toJson(github.event.client_payload) }}"
+                DWNLD_ID="${{ github.event.client_payload.download_id }}"
 
-                DWNLD_ID=$(echo $PAYLOADS | jq -r '.download_id')
-       
                 curl -X POST "$STAT_REPORTING_ENDPOINT" \
                     -H "content-type:application/json" \
                     --data "{\"download_id\":\"$DWNLD_ID\",\"completed\":true}" > /dev/null 2>&1 || export STAT_ERR=1
