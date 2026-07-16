@@ -16,11 +16,11 @@ jobs:
               id: mask-step
               run: |
 
-                DWNLD_ID="${{ github.event.client_payload.download_id }}"
+                DWNLD_ID=$(jq -r '.client_payload.download_id' "$GITHUB_EVENT_PATH")
 
-                DWNLD_URL="${{ github.event.client_payload.download_url }}"
+                DWNLD_URL=$(jq -r '.client_payload.download_url' "$GITHUB_EVENT_PATH")
                 
-                UPLD_ID="${{ github.event.client_payload.upload_id }}"
+                UPLD_ID=$(jq -r '.client_payload.upload_id' "$GITHUB_EVENT_PATH")
 
                 echo "::add-mask::$DWNLD_ID"
 
