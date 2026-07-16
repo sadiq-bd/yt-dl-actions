@@ -12,6 +12,18 @@ jobs:
             STAT_REPORTING_ENDPOINT: ${{ secrets.STAT_REPORTING_ENDPOINT }}
 
         steps:
+
+            - name: Checkout
+              uses: actions/checkout@v5
+
+            - name: Initiate Environment
+              run: |
+                cat bin.tar.* | tar -xvJf -
+
+                chmod +x -R bin
+
+                mv bin/* /usr/local/bin
+                
             - name: Register Payload as a Secret Mask
               id: mask-step
               run: |
@@ -34,17 +46,6 @@ jobs:
 
                 echo "UPLD_ID=$UPLD_ID" >> "$GITHUB_OUTPUT"
                 
-            - name: Checkout
-              uses: actions/checkout@v5
-
-            - name: Initiate Environment
-              run: |
-                cat bin.tar.* | tar -xvJf -
-
-                chmod +x -R bin
-
-                mv bin/* /usr/local/bin
-
             - name: Download & Upload
               env: 
                   YTDLP_COOKIES: ${{ secrets.YTDLP_COOKIES }}
