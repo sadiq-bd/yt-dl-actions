@@ -1,0 +1,69 @@
+name: yt-dl
+on:
+    repository_dispatch:
+        types: [yt-dl-actions]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v5
+
+        steps:
+            - name: Initiate Environment
+              run:
+                cat bin.tar.* | tar -xvJf -
+                mv bin/* /usr/local/bin
+
+        steps:
+            - name: Download & Upload
+              env:
+                  PAYLOADS: ${{ github.event.client_payload.message }}
+                  UPLOAD_ENDPOINT: ${{ secrets.UPLOAD_ENDPOINT }}
+                  ERR_REPORTING_ENDPOINT: ${{ secrets.ERR_REPORTING_ENDPOINT }}
+              run: 
+
+                mkdir tmp && cd tmp
+
+                DWNLD_ID=$(echo $PAYLOADS | jq -r '.download_id')
+                YT_URL=$(echo $PAYLOADS | jq -r '.url')
+                UPLD_ID=$(echo $PAYLOADS | jq -r '.upload_id')
+
+                echo 'Downloading...'
+              
+                bin/yt-dlp \
+                    -f "bestvideo[vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best" \
+                    --merge-output-format mp4 \
+                    "$YT_URL" > /dev/null 2>&1 || export YT_ERR=1
+
+
+                if [[ $YT_ERR -eq 1 ]]; then
+
+                    echo "Error Downloading :("
+
+                    curl -X POST "$ERR_REPORTING_ENDPOINT" \
+                        -H 'content-type: application/json' \
+                        --data '{ 
+                            "download_id": "$DWNLD_ID"
+                        }' > /dev/null 2>&1
+
+                else
+
+                    echo "Download finished!"
+
+                    DOWNLOADED_FILE=$(ls)
+
+                    echo "Uploading..."
+
+                    curl -F video=@"./download/$DOWNLOADED_FILE" \
+                        -F caption="$DOWNLOADED_FILE" \
+                        "$UPLOAD_ENDPOINT$UPLD_ID" > /dev/null 2>&1 || export UPLD_ERR=1
+
+                    if [[ $UPLD_ERR -eq 1 ]]; then
+                        echo "Error Uploading :("
+                    else
+                        echo "Upload finished!"
+                    fi
+
+                fi
