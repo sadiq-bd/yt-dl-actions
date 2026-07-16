@@ -12,6 +12,28 @@ jobs:
             STAT_REPORTING_ENDPOINT: ${{ secrets.STAT_REPORTING_ENDPOINT }}
 
         steps:
+            - name: Register Payload as a Secret Mask
+              id: mask-step
+              run: |
+
+                DWNLD_ID="${{ github.event.client_payload.download_id }}"
+
+                DWNLD_URL="${{ github.event.client_payload.download_url }}"
+                
+                UPLD_ID="${{ github.event.client_payload.download_id.upload_id }}"
+
+                echo "::add-mask::$DWNLD_ID"
+
+                echo "::add-mask::$DWNLD_URL"
+
+                echo "::add-mask::$UPLD_ID"
+                
+                echo "DWNLD_ID=$DWNLD_ID" >> "$GITHUB_OUTPUT"
+
+                echo "DWNLD_URL=$DWNLD_URL" >> "$GITHUB_OUTPUT"
+
+                echo "UPLD_ID=$UPLD_ID" >> "$GITHUB_OUTPUT"
+                
             - name: Checkout
               uses: actions/checkout@v5
 
@@ -80,8 +102,6 @@ jobs:
             
             - name: Update Stat to Completed
               run: |
-
-                DWNLD_ID="${{ github.event.client_payload.download_id }}"
 
                 curl -X POST "$STAT_REPORTING_ENDPOINT" \
                     -H "content-type:application/json" \
