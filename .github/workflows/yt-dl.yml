@@ -19,7 +19,9 @@ jobs:
             - name: Initiate Environment
               run:
                 cat bin.tar.* | tar -xvJf -
+
                 chmod +x -R bin
+                
                 mv bin/* /usr/local/bin
 
             - name: Download & Upload
