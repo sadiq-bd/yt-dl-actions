@@ -30,6 +30,8 @@ jobs:
 
                 mkdir tmp && cd tmp
 
+                echo $PAYLOADS
+
                 DWNLD_ID=$(echo $PAYLOADS | jq -r '.download_id')
 
                 DWNLD_URL=$(echo $PAYLOADS | jq -r '.download_url')
