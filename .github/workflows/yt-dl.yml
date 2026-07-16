@@ -61,9 +61,13 @@ jobs:
                 echo 'Downloading...'
 
                 echo "$YTDLP_COOKIES" > cookie.txt
+
+                # QUALITY=""
+                
+                QUALITY="[height=720]"
               
                 yt-dlp \
-                    -f "bestvideo[vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best" \
+                    -f "bestvideo${QUALITY}[vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best${QUALITY}" \
                     --no-playlist \
                     --merge-output-format mp4 \
                     --cookies cookie.txt \
