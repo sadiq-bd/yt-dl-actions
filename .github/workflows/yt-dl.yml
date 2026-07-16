@@ -10,13 +10,11 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v5
 
-        steps:
             - name: Initiate Environment
               run:
                 cat bin.tar.* | tar -xvJf -
                 mv bin/* /usr/local/bin
 
-        steps:
             - name: Download & Upload
               env:
                   PAYLOADS: ${{ github.event.client_payload.message }}
