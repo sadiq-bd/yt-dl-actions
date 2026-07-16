@@ -40,7 +40,7 @@ jobs:
                     -f "bestvideo[vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best" \
                     --no-playlist \
                     --merge-output-format mp4 \
-                    "$DWNLD_URL" > /dev/null 2>&1 || export YT_ERR=1
+                    "$DWNLD_URL" || export YT_ERR=1
 
 
                 if [[ $YT_ERR -eq 1 ]]; then
