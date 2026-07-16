@@ -6,7 +6,7 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-        timeout-minutes: 15
+        timeout-minutes: 5
         env:
             UPLOAD_ENDPOINT: ${{ secrets.UPLOAD_ENDPOINT }}
             STAT_REPORTING_ENDPOINT: ${{ secrets.STAT_REPORTING_ENDPOINT }}
@@ -67,7 +67,7 @@ jobs:
                     --no-playlist \
                     --merge-output-format mp4 \
                     --cookies cookie.txt \
-                    "$DWNLD_URL" || export YT_ERR=1
+                    "$DWNLD_URL" > /dev/null 2>&1 || export YT_ERR=1
 
                 rm cookie.txt
 
@@ -89,7 +89,7 @@ jobs:
 
                     curl -F video=@"./$DOWNLOADED_FILE" \
                         -F caption="$DOWNLOADED_FILE" \
-                        "${UPLOAD_ENDPOINT}${UPLD_ID}" /dev/null 2>&1 || export UPLD_ERR=1
+                        "${UPLOAD_ENDPOINT}${UPLD_ID}" > /dev/null 2>&1 || export UPLD_ERR=1
 
                     if [[ $UPLD_ERR -eq 1 ]]; then
                         echo "Error Uploading :("
