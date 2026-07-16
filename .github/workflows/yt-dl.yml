@@ -8,7 +8,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 15
         env:
-            PAYLOADS: ${{ github.event.client_payload.message }}
+            PAYLOADS: ${{ toJson(github.event.client_payload) }}
             UPLOAD_ENDPOINT: ${{ secrets.UPLOAD_ENDPOINT }}
             STAT_REPORTING_ENDPOINT: ${{ secrets.STAT_REPORTING_ENDPOINT }}
 
@@ -29,8 +29,6 @@ jobs:
               run: |
 
                 mkdir tmp && cd tmp
-
-                echo $PAYLOADS
 
                 DWNLD_ID=$(echo $PAYLOADS | jq -r '.download_id')
 
