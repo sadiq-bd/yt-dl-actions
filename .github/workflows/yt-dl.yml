@@ -43,10 +43,8 @@ jobs:
                     echo "Error Downloading :("
 
                     curl -X POST "$ERR_REPORTING_ENDPOINT" \
-                        -H 'content-type: application/json' \
-                        --data '{ 
-                            "download_id": "$DWNLD_ID"
-                        }' > /dev/null 2>&1
+                        -H "content-type:application/json" \
+                        --data '{"download_id":"$DWNLD_ID"}' > /dev/null 2>&1
 
                 else
 
