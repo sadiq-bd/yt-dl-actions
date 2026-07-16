@@ -21,7 +21,7 @@ jobs:
                 cat bin.tar.* | tar -xvJf -
 
                 chmod +x -R bin
-                
+
                 mv bin/* /usr/local/bin
 
             - name: Download & Upload
@@ -38,6 +38,7 @@ jobs:
               
                 yt-dlp \
                     -f "bestvideo[vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best" \
+                    --no-playlist \
                     --merge-output-format mp4 \
                     "$DWNLD_URL" > /dev/null 2>&1 || export YT_ERR=1
 
@@ -48,7 +49,7 @@ jobs:
 
                     curl -X POST "$STAT_REPORTING_ENDPOINT" \
                         -H "content-type:application/json" \
-                        --data '{"download_id":"$DWNLD_ID","error":true}' > /dev/null 2>&1
+                        --data "{\"download_id\":\"$DWNLD_ID\",\"error\":true}" > /dev/null 2>&1
 
                 else
 
@@ -76,7 +77,7 @@ jobs:
                                     
                 curl -X POST "$STAT_REPORTING_ENDPOINT" \
                     -H "content-type:application/json" \
-                    --data '{"download_id":"$DWNLD_ID","completed":true}' > /dev/null 2>&1 || export STAT_ERR=1
+                    --data "{\"download_id\":\"$DWNLD_ID\",\"completed\":true}" > /dev/null 2>&1 || export STAT_ERR=1
 
                 if [[ $STAT_ERR -eq 1 ]]; then
                     echo "Error Reporting completed status :("
