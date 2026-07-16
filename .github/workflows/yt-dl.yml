@@ -10,7 +10,6 @@ jobs:
         env:
             UPLOAD_ENDPOINT: ${{ secrets.UPLOAD_ENDPOINT }}
             STAT_REPORTING_ENDPOINT: ${{ secrets.STAT_REPORTING_ENDPOINT }}
-            YTDLP_ARGS: ${{ secrets.YTDLP_ARGS }}
 
         steps:
             - name: Checkout
@@ -25,7 +24,8 @@ jobs:
                 mv bin/* /usr/local/bin
 
             - name: Download & Upload
-
+              env: 
+                  YTDLP_COOKIES: ${{ secrets.YTDLP_COOKIES }}
               run: |
 
                 mkdir tmp && cd tmp
@@ -37,14 +37,17 @@ jobs:
                 UPLD_ID="${{ github.event.client_payload.download_id.upload_id }}"
 
                 echo 'Downloading...'
+
+                echo "$YTDLP_COOKIES" > cookie.txt
               
                 yt-dlp \
                     -f "bestvideo[vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best" \
                     --no-playlist \
                     --merge-output-format mp4 \
-                    $YTDLP_ARGS \
+                    --cookies cookie.txt \
                     "$DWNLD_URL" || export YT_ERR=1
 
+                rm cookie.txt
 
                 if [[ $YT_ERR -eq 1 ]]; then
 
