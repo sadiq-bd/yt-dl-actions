@@ -8,7 +8,6 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 15
         env:
-            PAYLOADS: ${{ toJson(github.event.client_payload) }}
             UPLOAD_ENDPOINT: ${{ secrets.UPLOAD_ENDPOINT }}
             STAT_REPORTING_ENDPOINT: ${{ secrets.STAT_REPORTING_ENDPOINT }}
             YTDLP_ARGS: ${{ secrets.YTDLP_ARGS }}
@@ -30,6 +29,8 @@ jobs:
               run: |
 
                 mkdir tmp && cd tmp
+
+                PAYLOADS="${{ toJson(github.event.client_payload) }}"
 
                 DWNLD_ID=$(echo $PAYLOADS | jq -r '.download_id')
 
@@ -78,6 +79,10 @@ jobs:
             
             - name: Update Stat to Completed
               run: |
+
+                PAYLOADS="${{ toJson(github.event.client_payload) }}"
+
+                DWNLD_ID=$(echo $PAYLOADS | jq -r '.download_id')
        
                 curl -X POST "$STAT_REPORTING_ENDPOINT" \
                     -H "content-type:application/json" \
