@@ -31,7 +31,9 @@ jobs:
                 mkdir tmp && cd tmp
 
                 DWNLD_ID=$(echo $PAYLOADS | jq -r '.download_id')
+
                 DWNLD_URL=$(echo $PAYLOADS | jq -r '.download_url')
+                
                 UPLD_ID=$(echo $PAYLOADS | jq -r '.upload_id')
 
                 echo 'Downloading...'
