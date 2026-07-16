@@ -87,7 +87,7 @@ jobs:
 
                     echo "Uploading..."
 
-                    curl -F video=@"./tmp/$DOWNLOADED_FILE" \
+                    curl -F video=@"./$DOWNLOADED_FILE" \
                         -F caption="$DOWNLOADED_FILE" \
                         "$UPLOAD_ENDPOINT$UPLD_ID" > /dev/null 2>&1 || export UPLD_ERR=1
 
