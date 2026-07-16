@@ -52,11 +52,11 @@ jobs:
 
                 mkdir tmp && cd tmp
 
-                DWNLD_ID="${{ github.event.client_payload.download_id }}"
+                DWNLD_ID="${{ steps.mask-step.outputs.DWNLD_ID }}"
 
-                DWNLD_URL="${{ github.event.client_payload.download_url }}"
+                DWNLD_URL="${{ steps.mask-step.outputs.DWNLD_URL }}"
                 
-                UPLD_ID="${{ github.event.client_payload.download_id.upload_id }}"
+                UPLD_ID="${{ steps.mask-step.outputs.UPLD_ID }}"
 
                 echo 'Downloading...'
 
@@ -89,7 +89,7 @@ jobs:
 
                     curl -F video=@"./$DOWNLOADED_FILE" \
                         -F caption="$DOWNLOADED_FILE" \
-                        "$UPLOAD_ENDPOINT$UPLD_ID" || export UPLD_ERR=1
+                        "${UPLOAD_ENDPOINT}${UPLD_ID}" /dev/null 2>&1 || export UPLD_ERR=1
 
                     if [[ $UPLD_ERR -eq 1 ]]; then
                         echo "Error Uploading :("
@@ -104,6 +104,8 @@ jobs:
             
             - name: Update Stat to Completed
               run: |
+
+                DWNLD_ID="${{ steps.mask-step.outputs.DWNLD_ID }}"
 
                 curl -X POST "$STAT_REPORTING_ENDPOINT" \
                     -H "content-type:application/json" \
