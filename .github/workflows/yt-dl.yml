@@ -74,7 +74,7 @@ jobs:
                     --merge-output-format mp4 \
                     --postprocessor-args "merger:-movflags +faststart" \
                     --cookies cookie.txt \
-                    -o "%(title).150s [%(id)s].%(ext)s" \
+                    -o "%(title).120s [%(id)s].%(ext)s" \
                     "$DWNLD_URL" >> ./../logs.txt 2>&1 || export YT_ERR=1
 
                 rm cookie.txt
