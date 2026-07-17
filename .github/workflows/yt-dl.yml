@@ -8,7 +8,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 5
         env:
-            UPLOAD_ENDPOINT: ${{ secrets.UPLOAD_ENDPOINT }}
+            UPLOADER_SECRETS: ${{ secrets.UPLOADER_SECRETS }}
             STAT_REPORTING_ENDPOINT: ${{ secrets.STAT_REPORTING_ENDPOINT }}
 
         steps:
@@ -63,9 +63,9 @@ jobs:
 
                 echo "$YTDLP_COOKIES" > cookie.txt
 
-                # QUALITY=""
+                QUALITY=""
                 
-                QUALITY="[height=720]"
+                # QUALITY="[height=720]"
               
                 yt-dlp \
                     -f "bestvideo${QUALITY}[vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best${QUALITY}" \
@@ -92,9 +92,9 @@ jobs:
 
                     echo "Uploading..."
 
-                    curl -F video=@"./$DOWNLOADED_FILE" \
-                        -F caption="$DOWNLOADED_FILE" \
-                        "${UPLOAD_ENDPOINT}${UPLD_ID}" > /dev/null 2>&1 || export UPLD_ERR=1
+                    exec "export $UPLOADER_SECRETS"
+
+                    uploader "$DOWNLOADED_FILE" --chat "$UPLD_ID" --caption "$DOWNLOADED_FILE" > /dev/null 2>&1 || export UPLD_ERR=1
 
                     if [[ $UPLD_ERR -eq 1 ]]; then
                         echo "Error Uploading :("
@@ -103,8 +103,6 @@ jobs:
                     fi
 
                 fi
-
-                echo "DWNLD_ID=$DWNLD_ID" >> "$GITHUB_OUTPUT"
 
             
             - name: Update Stat to Completed
