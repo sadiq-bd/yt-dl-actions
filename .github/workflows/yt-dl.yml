@@ -92,7 +92,7 @@ jobs:
 
                     echo "Uploading..."
 
-                    exec "export $UPLOADER_SECRETS"
+                    export $UPLOADER_SECRETS
 
                     uploader "$DOWNLOADED_FILE" --chat "$UPLD_ID" --caption "$DOWNLOADED_FILE" > /dev/null 2>&1 || export UPLD_ERR=1
 
