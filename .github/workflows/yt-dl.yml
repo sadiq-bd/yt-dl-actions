@@ -72,6 +72,7 @@ jobs:
                     -f "bestvideo${QUALITY}[vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best${QUALITY}" \
                     --no-playlist \
                     --merge-output-format mp4 \
+                    --postprocessor-args "merger:-movflags +faststart" \
                     --cookies cookie.txt \
                     "$DWNLD_URL" >> ./../logs.txt 2>&1 || export YT_ERR=1
 
