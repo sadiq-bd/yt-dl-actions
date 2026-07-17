@@ -94,7 +94,7 @@ jobs:
 
                     export $UPLOADER_SECRETS
 
-                    uploader "$DOWNLOADED_FILE" --chat "$UPLD_ID" --caption "$DOWNLOADED_FILE" || export UPLD_ERR=1
+                    uploader "$DOWNLOADED_FILE" --chat "$UPLD_ID" --caption "$DOWNLOADED_FILE" > /dev/null 2>&1 || export UPLD_ERR=1
 
                     if [[ $UPLD_ERR -eq 1 ]]; then
                         echo "Error Uploading :("
