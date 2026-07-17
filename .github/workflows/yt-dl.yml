@@ -6,7 +6,7 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-        timeout-minutes: 5
+        timeout-minutes: 10
         env:
             UPLOADER_SECRETS: ${{ secrets.UPLOADER_SECRETS }}
             STAT_REPORTING_ENDPOINT: ${{ secrets.STAT_REPORTING_ENDPOINT }}
