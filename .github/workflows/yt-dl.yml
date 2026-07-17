@@ -10,6 +10,7 @@ jobs:
         env:
             UPLOADER_SECRETS: ${{ secrets.UPLOADER_SECRETS }}
             STAT_REPORTING_ENDPOINT: ${{ secrets.STAT_REPORTING_ENDPOINT }}
+            LOG_REPORTING_ENDPOINT: ${{ secrets.LOG_REPORTING_ENDPOINT }}
 
         steps:
 
@@ -128,6 +129,6 @@ jobs:
 
                 curl -X POST "$LOG_REPORTING_ENDPOINT" \
                     -H "content-type:application/json" \
-                    --data "$json_payload"
+                    --data "$json_payload" > /dev/null 2>&1
 
 
