@@ -85,7 +85,7 @@ jobs:
 
                     curl -X POST "$STAT_REPORTING_ENDPOINT" \
                         -H "content-type:application/json" \
-                        --data "{\"download_id\":\"$DWNLD_ID\",\"error\":true}" >> ./../logs.txt 2>&1
+                        --data "{\"download_id\":\"$DWNLD_ID\",\"error\":true,\"message\":\"Error downloading video :(\"}" >> ./../logs.txt 2>&1
 
                 else
 
@@ -104,7 +104,7 @@ jobs:
 
                         curl -X POST "$STAT_REPORTING_ENDPOINT" \
                             -H "content-type:application/json" \
-                            --data "{\"download_id\":\"$DWNLD_ID\",\"error\":true}" >> ./../logs.txt 2>&1
+                            --data "{\"download_id\":\"$DWNLD_ID\",\"error\":true,\"message\":\"Error sending video :(\"}" >> ./../logs.txt 2>&1
 
                     else
                         echo "Upload finished!" | tee -a ./../logs.txt
