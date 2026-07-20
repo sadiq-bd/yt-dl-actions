@@ -19,13 +19,15 @@ jobs:
 
             - name: Initiate Environment
               run: |
-                cat bin.tar.* | tar -xvJf -
+                cat bin.tar.* | tar -xJf -
 
                 chmod +x -R bin
 
                 mv bin/* /usr/local/bin
+
+                echo "Initialized!"
                 
-            - name: Register Payload as a Secret Mask
+            - name: Mask Payload
               id: mask-step
               run: |
 
@@ -54,13 +56,15 @@ jobs:
 
                 mkdir tmp && cd tmp
 
+                LOG_FILE="./../logs.txt"
+
                 DWNLD_ID="${{ steps.mask-step.outputs.DWNLD_ID }}"
 
                 DWNLD_URL="${{ steps.mask-step.outputs.DWNLD_URL }}"
                 
                 UPLD_ID="${{ steps.mask-step.outputs.UPLD_ID }}"
 
-                echo 'Downloading...' | tee -a ./../logs.txt
+                echo 'Downloading...' | tee -a "$LOG_FILE"
 
                 echo "$YTDLP_COOKIES" > cookie.txt
 
@@ -75,39 +79,39 @@ jobs:
                     --postprocessor-args "merger:-movflags +faststart" \
                     --cookies cookie.txt \
                     -o "%(title).150B [%(id)s].%(ext)s" \
-                    "$DWNLD_URL" >> ./../logs.txt 2>&1 || export YT_ERR=1
+                    "$DWNLD_URL" >> "$LOG_FILE" 2>&1 || export YT_ERR=1
 
                 rm cookie.txt
 
                 if [[ $YT_ERR -eq 1 ]]; then
 
-                    echo "Error Downloading :(" | tee -a ./../logs.txt
+                    echo "Error Downloading :(" | tee -a "$LOG_FILE"
 
                     curl -X POST "$STAT_REPORTING_ENDPOINT" \
                         -H "content-type:application/json" \
-                        --data "{\"download_id\":\"$DWNLD_ID\",\"error\":true,\"message\":\"Error downloading video :(\"}" >> ./../logs.txt 2>&1
+                        --data "{\"download_id\":\"$DWNLD_ID\",\"error\":true,\"message\":\"Error downloading video :(\"}" >> "$LOG_FILE" 2>&1
 
                 else
 
-                    echo "Download finished!" | tee -a ./../logs.txt
+                    echo "Download finished!" | tee -a "$LOG_FILE"
 
                     DOWNLOADED_FILE=$(ls)
 
-                    echo "Uploading..." | tee -a ./../logs.txt
+                    echo "Uploading..." | tee -a "$LOG_FILE"
 
                     export $UPLOADER_SECRETS
 
-                    uploader "$DOWNLOADED_FILE" --chat "$UPLD_ID" --caption "$DOWNLOADED_FILE" >> ./../logs.txt 2>&1 || export UPLD_ERR=1
+                    uploader "$DOWNLOADED_FILE" --chat "$UPLD_ID" --caption "$DOWNLOADED_FILE" >> "$LOG_FILE" 2>&1 || export UPLD_ERR=1
 
                     if [[ $UPLD_ERR -eq 1 ]]; then
-                        echo "Error Uploading :(" | tee -a ./../logs.txt
+                        echo "Error Uploading :(" | tee -a "$LOG_FILE"
 
                         curl -X POST "$STAT_REPORTING_ENDPOINT" \
                             -H "content-type:application/json" \
-                            --data "{\"download_id\":\"$DWNLD_ID\",\"error\":true,\"message\":\"Error sending video :(\"}" >> ./../logs.txt 2>&1
+                            --data "{\"download_id\":\"$DWNLD_ID\",\"error\":true,\"message\":\"Error sending video :(\"}" >> "$LOG_FILE" 2>&1
 
                     else
-                        echo "Upload finished!" | tee -a ./../logs.txt
+                        echo "Upload finished!" | tee -a "$LOG_FILE"
                     fi
 
                 fi
@@ -117,25 +121,26 @@ jobs:
               if: always()
               run: |
 
+                LOG_FILE="./logs.txt"
+
                 DWNLD_ID="${{ steps.mask-step.outputs.DWNLD_ID }}"
 
                 curl -X POST "$STAT_REPORTING_ENDPOINT" \
                     -H "content-type:application/json" \
-                    --data "{\"download_id\":\"$DWNLD_ID\",\"completed\":true}" >> ./logs.txt 2>&1 || export STAT_ERR=1
+                    --data "{\"download_id\":\"$DWNLD_ID\",\"completed\":true}" >> "$LOG_FILE" 2>&1 || export STAT_ERR=1
 
                 if [[ $STAT_ERR -eq 1 ]]; then
-                    echo "Error Reporting completed status :(" | tee -a ./logs.txt
+                    echo "Error Reporting completed status :(" | tee -a "$LOG_FILE"
                 else
-                    echo "Completed!" | tee -a ./logs.txt
+                    echo "Completed!" | tee -a "$LOG_FILE"
                 fi
 
-                json_payload=$(jq -n \
+                jq -n \
                     --arg id "$DWNLD_ID" \
                     --rawfile logs logs.txt \
-                    '{"download_id": $id, "download_logs": $logs}')
-
-                curl -X POST "$LOG_REPORTING_ENDPOINT" \
-                    -H "content-type:application/json" \
-                    --data "$json_payload" > /dev/null 2>&1
+                    '{"download_id": $id, "download_logs": $logs}' \
+                    | curl -X POST "$LOG_REPORTING_ENDPOINT" \
+                    -H "Content-Type: application/json" \
+                    --data-binary @- > /dev/null 2>&1
 
 
