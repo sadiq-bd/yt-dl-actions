@@ -19,6 +19,9 @@ jobs:
 
             - name: Initiate Environment
               run: |
+
+                echo "Initializing..."
+
                 cat bin.tar.* | tar -xJf -
 
                 chmod +x -R bin
